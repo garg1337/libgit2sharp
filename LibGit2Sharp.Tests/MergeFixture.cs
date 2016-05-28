@@ -827,6 +827,27 @@ namespace LibGit2Sharp.Tests
         }
 
         [Fact]
+        public void CanMergeCommitsAndDetectConflictsInIndex()
+        {
+            string path = SandboxMergeTestRepo();
+            using (var repo = new Repository(path))
+            {
+                repo.Refs.UpdateTarget("HEAD", "refs/heads/unborn");
+
+                repo.Index.Replace(repo.Lookup<Commit>("conflicts"));
+
+                repo.Commit("A conflicting world, free of the burden of the history", Constants.Signature, Constants.Signature);
+
+                var master = repo.Branches["master"].Tip;
+                var branch = repo.Branches["unborn"].Tip;
+
+                Index result = repo.ObjectDatabase.MergeCommitsAndGetIndex(master, branch, null);
+
+                Assert.NotEqual(0, result.Conflicts.Count());
+            }
+        }
+
+        [Fact]
         public void CanMergeFastForwardTreeWithoutConflicts()
         {
             string path = SandboxMergeTestRepo();

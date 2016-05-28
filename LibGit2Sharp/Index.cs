@@ -47,6 +47,15 @@ namespace LibGit2Sharp
             repo.RegisterForCleanup(handle);
         }
 
+        internal Index(Repository repo, IndexHandle handle)
+        {
+            this.repo = repo;
+            this.handle = handle;
+            conflicts = new ConflictCollection(this);
+
+            repo.RegisterForCleanup(handle);
+        }
+
         internal IndexHandle Handle
         {
             get { return handle; }
